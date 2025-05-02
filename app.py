@@ -9,27 +9,23 @@ from nltk.tokenize import TreebankWordTokenizer
 
 tokenizer=TreebankWordTokenizer()
 ps=PorterStemmer()
+stop_words = set(stopwords.words('english'))
 
 def transform_text(text):
-    text=text.lower()
-    text=tokenizer.tokenize(text)
+    text = text.lower()
+    tokens = tokenizer.tokenize(text)
 
-    y=[]
-    for i in text:
-        if i.isalnum():
-            y.append(i)
-    text = y[:]
-    y.clear()
+    # Keep only alphanumeric tokens
+    tokens = [t for t in tokens if t.isalnum()]
 
-    for i in text:
-        if i not in stopwords.words('english') and i not in string.punctuation:
-            y.append(i)
-    text = y[:]
-    y.clear()
+    # Remove stopwords
+    tokens = [t for t in tokens if t not in stop_words]
 
-    for i in text:
-        y.append(ps.stem(i))
-    return " ".join(y)
+    # Stemming
+    tokens = [ps.stem(t) for t in tokens]
+
+    return " ".join(tokens)
+
 
 # Load vectorizer and model
 with open("vectorizer.pkl", "rb") as f:
